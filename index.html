@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23b9b9b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Crect x='2.5' y='2.5' width='59' height='59' rx='12' fill='none' stroke='%23fff' stroke-opacity='.28' stroke-width='1.5'/%3E%3Cpath fill='url(%23g)' d='M19 13L24.5 7L30 13V51L24.5 57L19 51Z M11 20L19 13V21Z M11 44L19 51V43Z M30 27L44 13L48 17L30 37Z M49 6L56 13L49 20L42 13Z M30 37L44 51L48 47L30 27Z M49 58L56 51L49 44L42 51Z'/%3E%3C/svg%3E">
 <title>Кирилл — создаю современные сайты для бизнеса</title>
 <meta name="description" content="Кирилл, веб-разработчик. Лендинги и сайты-визитки под ключ, быстро и с AI-технологиями.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +104,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .rev span{position:absolute;z-index:2;top:6px;left:6px;padding:2px 10px;border-radius:999px;font-size:.7rem;background:rgba(20,20,20,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .rev img{object-position:top}
 
+.fade{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:200;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.2) 30%,rgba(0,0,0,.6) 63%,#000);
+  mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.2) 30%,rgba(0,0,0,.6) 63%,#000)}
 /* Управление колесом */
 .ctrl{position:absolute;z-index:300;left:50%;bottom:calc(var(--P) + var(--R) - 215px);transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:6px;border-radius:999px}
 .ctrl button{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 1px rgba(255,255,255,.45);transition:transform .25s cubic-bezier(.3,1.4,.5,1),opacity .2s}
@@ -182,6 +186,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <!-- Колесо: карточки создаются скриптом из списка WORKS (он в самом низу файла) -->
     <div class="stage" id="stage" tabindex="0" aria-label="Колесо работ. Стрелки влево и вправо переключают проекты">
       <div class="wheel" id="wheel"></div>
+      <!-- нижнее затухание: копия фона-комнаты с маской поверх карточек (маска на самом колесе ломает стекло) -->
+      <div class="fade" aria-hidden="true"><div class="scene"><div class="scene__img"></div><div class="scene__shade"></div></div></div>
       <div class="ctrl glass">
         <button id="prev" aria-label="Предыдущая работа"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         <output id="count">1 / 12</output>
@@ -353,7 +359,7 @@ stage.addEventListener('touchend',e=>{
 });
 
 /* Глубина фона: двигается медленнее страницы и чуть следует за курсором */
-const bg=document.getElementById('bg');
+const bg={style:{set transform(v){document.querySelectorAll('.scene__img').forEach(e=>e.style.transform=v)}}};
 let sy=0,mx=0,my=0;
 const draw=()=>{bg.style.transform=`translate(${mx}px,${my-sy*.06}px) scale(1.08)`};
 addEventListener('scroll',()=>{sy=scrollY;draw()},{passive:true});
